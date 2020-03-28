@@ -9,8 +9,14 @@
 //////////////////////////////////////////////////////////////
 
 #include <unistd.h>
+#include <time.h>
+#include <stdio.h>
 
 int main(void){
+    clock_t t;
+    t = clock();
     write(STDOUT_FILENO, "Hello World\n", 12);
+    t = clock() - t;
+    printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
     return 0;
 }

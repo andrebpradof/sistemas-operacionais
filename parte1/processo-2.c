@@ -13,18 +13,30 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <time.h>
+
 
 int main(void){
     pid_t p = fork ();
+    clock_t t;
+
     if (p == -1) {
         perror ("fork");
         exit (EXIT_FAILURE);
     } else if (p == 0) { //Filho
+        
         printf (" Filho\n");
+        t = clock();
         sleep (3);
+        t = clock() - t;
+        printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+    
     } else if (p > 0) {
         printf ("Pai\n");
+        t = clock();
         wait (NULL); //Esperar que o filho termine
+        t = clock() - t;
+        printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
         printf ("Fim\n");
     }
 

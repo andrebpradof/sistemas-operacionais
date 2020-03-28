@@ -11,10 +11,22 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <time.h>
 
 int main (void){
+    clock_t t;
     pid_t p = fork ();
-    
-    printf ("p %5d pid = %5d ppid = %5d\n", p, getpid (), getppid());
+
+    t = clock();
+    pid_t retpid = getpid();
+    t = clock() - t;
+    printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+
+    t = clock();
+    pid_t retppid = getppid();
+    t = clock() - t;
+    printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+
+    printf ("p %5d pid = %5d ppid = %5d\n", p, retpid, retppid);
     return 0;
 }
