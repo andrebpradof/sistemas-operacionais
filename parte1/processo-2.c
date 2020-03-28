@@ -29,14 +29,14 @@ int main(void){
         t = clock();
         sleep (3);
         t = clock() - t;
-        printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+        printf("Tempo de execucao sleep(3)): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
     
     } else if (p > 0) {
         printf ("Pai\n");
         t = clock();
         wait (NULL); //Esperar que o filho termine
         t = clock() - t;
-        printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+        printf("Tempo de execucao sleep(NULL): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
         printf ("Fim\n");
     }
 

@@ -20,13 +20,13 @@ int main (void){
     t = clock();
     pid_t retpid = getpid();
     t = clock() - t;
-    printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+    printf("Tempo de execucao getpid(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
 
     t = clock();
     pid_t retppid = getppid();
     t = clock() - t;
-    printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+    printf("Tempo de execucao getppid(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
 
-    printf ("p %5d pid = %5d ppid = %5d\n", p, retpid, retppid);
+    printf ("p = %5d\npid = %5d\nppid = %5d\n", p, retpid, retppid);
     return 0;
 }

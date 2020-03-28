@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////
-//  SSC0640 - Sistemas Operacionais I (2020)                //  
+//  SSC0640 - Sistemas Operacionais I (2020)                //
 //  Exemplo: System call - E/S e arquivos                   //
 //                                                          //
 //  Alunos:                                                 //
@@ -17,6 +17,6 @@ int main(void){
     t = clock();
     write(STDOUT_FILENO, "Hello World\n", 12);
     t = clock() - t;
-    printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+    printf("Tempo de execucao write(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
     return 0;
 }

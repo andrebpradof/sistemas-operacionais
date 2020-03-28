@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////
-//  SSC0640 - Sistemas Operacionais I (2020)                //  
+//  SSC0640 - Sistemas Operacionais I (2020)                //
 //  Exemplo: System call - Processos                        //
 //                                                          //
 //  Alunos:                                                 //
@@ -13,15 +13,16 @@
 #include <unistd.h>
 #include <time.h>
 
-int main(void){
+int main(void)
+{
     pid_t p;
     clock_t t;
 
     t = clock();
-    p = fork ();
-    printf("Tempo de execucao: %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+    p = fork();
+    printf("Tempo de execucao fork(): %lf\n", ((double)t) / ((CLOCKS_PER_SEC / 1000)));
 
-    printf ("p = %d\n", p);
+    printf("p = %d\n", p);
 
     return 0;
 }
