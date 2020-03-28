@@ -1,7 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <unistd.h>
 
-int main(int argc, char const *argv[]){
-    printf("Hello World");
+int main(void){
+    write(STDOUT_FILENO, "Hello World\n", 12);
     return 0;
 }
