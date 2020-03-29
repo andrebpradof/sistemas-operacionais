@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TAM 1000000
+#define TAM 10000
 
 int main(int argc, char const *argv[])
 {
-    long int num;
+    int num;
     FILE *fpw;
 
     fpw = fopen("read.txt","w");
     
-    for(long int i=0; i < TAM; i++){
-        fprintf(fpw, "%ld", i);
+    for(int i=0; i < TAM; i++){
+        fprintf(fpw, "%d\n", i);
     }
 
     fclose(fpw);

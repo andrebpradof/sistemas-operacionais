@@ -17,25 +17,25 @@
 
 int main (void){
 
-    int fd;
-    clock_t t;
+    int fd; //variável para descritor de arquivo
+    clock_t t;  //variável para a contagem do tempo
 
-    t = clock();
-    fd = open("teste.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    t = clock() - t;
-    printf("Tempo de execucao open(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+    t = clock();    //início da contagem do tempo para o processo de abertura de um arquivo existente
+    fd = open("teste.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644); //chamada de sistema para abertura do arquivo
+    t = clock() - t;    //cálculo do tempo
+    printf("Tempo de execucao open(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000))); //exibição do tempo de execução do processo de abertura do arquivo
 
-    if(fd < 0){
+    if(fd < 0){ //tratamento para caso de erro no arquivo
         perror("open");
         exit(EXIT_FAILURE);
     }
 
-    t = clock();
-    write(fd,"Em computação, uma chamada de sistema (system call) é o mecanismo programático pelo qual um programa de computador solicita um serviço do núcleo do sistema operacional sobre o qual ele está sendo executado.",213);
-    t = clock() - t;
-    printf("Tempo de execucao write(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+    t = clock();    //início da contagem do tempo para o processo de escrita em um arquivo
+    write(fd,"Em computação, uma chamada de sistema (system call) é o mecanismo programático pelo qual um programa de computador solicita um serviço do núcleo do sistema operacional sobre o qual ele está sendo executado.",213); //chamada de sistema para escrita no arquivo
+    t = clock() - t;    //cálculo do tempo
+    printf("Tempo de execucao write(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));    //exibição do tempo de execução do processo de escrita no arquivo
 
-    close(fd);
+    close(fd);  //fechamento do arquivo
 
     return 0;
 }

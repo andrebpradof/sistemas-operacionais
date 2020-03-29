@@ -13,10 +13,11 @@
 #include <stdio.h>
 
 int main(void){
-    clock_t t;
-    t = clock();
-    write(STDOUT_FILENO, "Hello World\n", 12);
-    t = clock() - t;
-    printf("Tempo de execucao write(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+    clock_t t; 
+
+    t = clock(); //início da contagem do tempo para a escrita na tela
+    write(STDOUT_FILENO, "Hello World\n", 12); //chamada do sistema de escrita
+    t = clock() - t; //cálculo do tempo
+    printf("Tempo de execucao write(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));    //exibição do tempo de execução para o processo de escrita na tela
     return 0;
 }

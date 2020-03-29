@@ -14,19 +14,19 @@
 #include <time.h>
 
 int main (void){
-    clock_t t;
-    pid_t p = fork ();
+    clock_t t;  //variável para a contagem do tempo
+    pid_t p = fork ();  //criação do processo com seu identificador
 
-    t = clock();
-    pid_t retpid = getpid();
-    t = clock() - t;
-    printf("Tempo de execucao getpid(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+    t = clock();    //início da contagem do tempo para a chamada getpid (busca do identificador do processo atual)
+    pid_t retpid = getpid();    //busca do identificador do processo atual
+    t = clock() - t; //cálculo do tempo
+    printf("Tempo de execucao getpid(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));   //exibição do tempo de execução para a busca do identificador do processo atual
 
-    t = clock();
-    pid_t retppid = getppid();
-    t = clock() - t;
-    printf("Tempo de execucao getppid(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
+    t = clock();    //início da contagem do tempo para a chamada getppid (busca do identificador do processo pai)
+    pid_t retppid = getppid();  //busca do identificador do processo pai
+    t = clock() - t; //cálculo do tempo
+    printf("Tempo de execucao getppid(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));  //exibição do tempo de execução para a busca do identificador do processo pai
 
-    printf ("p = %5d\npid = %5d\nppid = %5d\n", p, retpid, retppid);
+    printf ("p = %5d\npid = %5d\nppid = %5d\n", p, retpid, retppid);    //exibição dos identificadores de cada processo
     return 0;
 }

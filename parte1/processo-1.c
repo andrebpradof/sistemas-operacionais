@@ -15,14 +15,14 @@
 
 int main(void)
 {
-    pid_t p;
-    clock_t t;
+    pid_t p;    //variável para o identificador do processo
+    clock_t t;  //variável para a contagem do tempo
 
-    t = clock();
-    p = fork();
-    printf("Tempo de execucao fork(): %lf\n", ((double)t) / ((CLOCKS_PER_SEC / 1000)));
+    t = clock();    //início da contagem do tempo da primitiva fork
+    p = fork();     //criação do processo
+    printf("Tempo de execucao fork(): %lf\n", ((double)t) / ((CLOCKS_PER_SEC / 1000))); //exibição do tempo utilizado pela execução da primitiva fork
 
-    printf("p = %d\n", p);
+    printf("p = %d\n", p);  //exibição do identificador do processo
 
     return 0;
 }
