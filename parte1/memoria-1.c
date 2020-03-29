@@ -25,7 +25,7 @@ void segments(){
     t = clock();    //início da contagem do tempo para a alocação de memória
     retBrk = sbrk(0);   //atribuição da memória necessária para o processo
     t = clock() - t; //cálculo do tempo
-    printf("Tempo de execucao sbrk(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000))); //exibição do tempo de execução para a atribuição de memória ao processo
+    printf("Tempo de execucao brk(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000))); //exibição do tempo de execução para a atribuição de memória ao processo
 
     printf("stack\t%10p\nbrk\t%10p\nheap\t%10p\n"
             "static\t%10p\nstatic\t%10p\ntext\t%10p\n",

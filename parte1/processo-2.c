@@ -27,14 +27,14 @@ int main(void){
         
         printf (" Filho\n");
         t = clock();    //início da contagem do tempo para uma chamada de espera
-        sleep (3);
+        sleep(3);   //pausa a thread por um tempo determinado
         t = clock() - t; //cálculo do tempo
         printf("Tempo de execucao sleep(3)): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));  //exibição do tempo de execução da chamada de espera
     
     } else if (p > 0) { //Pai
         printf ("Pai\n");
         t = clock();    //início da contagem do tempo para o término da execução do processo filho
-        wait (NULL);    //esperar que o filho termine
+        wait(NULL);    //esperar que o filho termine
         t = clock() - t; //cálculo do tempo
         printf("Tempo de execucao sleep(NULL): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));    //exibição do tempo decorrido na espera da morte do processo filho
         printf ("Fim\n");
