@@ -14,15 +14,14 @@
 #include <sys/stat.h>
 #include <sys/fcntl.h>
 
-#define B_SIZE 1048576          //Lê 1MB do arquivo 
-#define fileName "read.txt"    //Nome do arquivo padrão
+#define SIZE 1048576          //Lê 1MB do arquivo 
+#define fileName "read.txt"    //Nome do arquivo d
 
 int main(int argc, char const *argv[])
 {
 
-    char *buffer = calloc(B_SIZE, sizeof(char));    //Buffer para ler o arquivo
+    char *buffer = calloc(SIZE, sizeof(char));    //Buffer para ler o arquivo
     int file;                                       //Inteiro para receber o 'file descriptor'
-    int receiver;
     int times = 10000;
 
     file = open(fileName, O_RDONLY);
@@ -42,7 +41,7 @@ int main(int argc, char const *argv[])
 
         //lseek(file, 0, SEEK_SET);
 
-        int check = read(file, buffer, B_SIZE);
+        int check = read(file, buffer, SIZE);
 
         if(check < 0){ //Verificação de erro da leitura do arquivo
             
@@ -58,12 +57,12 @@ int main(int argc, char const *argv[])
         //write(receiver, buffer, check);
     }
 
-    /*if(write(STDOUT_FILENO, buffer, B_SIZE) < 0){   //Verificação de erro da escrita ao STDOUT
+    if(write(STDOUT_FILENO, buffer, SIZE) < 0){   //Verificação de erro da escrita ao STDOUT
         
         perror("stdout: ");
         exit(1);
 
-    }*/
+    }
 
     /*
     Syscall close utilizada para fechar o arquivo, tem como parametros o 'file descriptor' do arquivo

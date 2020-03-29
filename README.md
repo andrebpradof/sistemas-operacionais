@@ -7,3 +7,10 @@
 André Baconcelo Prado Furlanetti - Nº USP: 10748305 </br>
 Diego da Silva Parra - Nº USP: 10716550</br>
 Mateus Fernandes Doimo - Nº USP: 10691971</br>
+
+</br>
+
+<b>:video_camera: Vídeo:</b> LINK
+<b>:page_facing_up: Apresentação:</b> LINK
+
+<hr>
