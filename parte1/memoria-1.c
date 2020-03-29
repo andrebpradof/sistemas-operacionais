@@ -1,3 +1,13 @@
+//////////////////////////////////////////////////////////////
+//  SSC0640 - Sistemas Operacionais I (2020)                //
+//  Exemplo: System call - Memoria                          //
+//                                                          //
+//  Alunos:                                                 //
+//  André Baconcelo Prado Furlanetti - Nº USP: 10748305     //
+//  Diego da Silva Parra             - Nº USP: 10716550     //
+//  Mateus Fernandes Doimo           - Nº USP: 10691971     //
+//////////////////////////////////////////////////////////////
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
