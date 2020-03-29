@@ -15,31 +15,25 @@
 #include <sys/fcntl.h>
 
 #define SIZE 1048576          //Lê 1MB do arquivo 
-#define fileName "read.txt"    //Nome do arquivo d
+#define fileName "read.txt"    //Nome do arquivo de leitura
 
 int main(int argc, char const *argv[])
 {
 
     char *buffer = calloc(SIZE, sizeof(char));    //Buffer para ler o arquivo
-    int file;                                       //Inteiro para receber o 'file descriptor'
+    int file;                                     //Inteiro para receber o 'file descriptor'
     int times = 10000;
 
-    file = open(fileName, O_RDONLY);
+    file = open(fileName, O_RDONLY); // Abre o arquivo
 
-
-
-    if(file < 0){               //Verificação caso ocorra um erro na abertura do arquivo
+    if(file < 0){                   //Verificação caso ocorra um erro na abertura do arquivo
         perror("file");
         exit(1);
     }
 
     printf("Arquivo para ser copiado aberto com sucesso\n");
 
-    //receiver = open("output.txt", O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
-
-    while(times > 0){
-
-        //lseek(file, 0, SEEK_SET);
+    for(int i=0; i<times; i++){
 
         int check = read(file, buffer, SIZE);
 
@@ -49,14 +43,7 @@ int main(int argc, char const *argv[])
             exit(1);
 
         }        
-
-        //printf("Arquivo lido com sucesso\n");
-        
-        times--;
-
-        //write(receiver, buffer, check);
     }
-
     if(write(STDOUT_FILENO, buffer, SIZE) < 0){   //Verificação de erro da escrita ao STDOUT
         
         perror("stdout: ");
@@ -64,10 +51,6 @@ int main(int argc, char const *argv[])
 
     }
 
-    /*
-    Syscall close utilizada para fechar o arquivo, tem como parametros o 'file descriptor' do arquivo
-    Retorna 0 caso o arquivo seja fechado com sucesso, ou -1 caso tenha ocorrido algum erro
-    */
     if(close(file) < 0){        //Verificação de erro do arquivo
         
         perror("file");
