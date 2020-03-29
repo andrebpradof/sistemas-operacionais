@@ -23,7 +23,7 @@ void segments(){
     int *retBrk;    
     
     t = clock();    //início da contagem do tempo para a alocação de memória
-    retBrk = sbrk(0);   //atribuição da memória necessária para o processo
+    retBrk = brk(0);   //atribuição da memória necessária para o processo
     t = clock() - t; //cálculo do tempo
     printf("Tempo de execucao brk(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000))); //exibição do tempo de execução para a atribuição de memória ao processo
 
