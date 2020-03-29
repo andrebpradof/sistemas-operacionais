@@ -10,29 +10,48 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include <unistd.h>
 #include <time.h>
 
-double a[0x02000000];
+#define _GNU_SOURCE
 
-void segments(){
-    clock_t t;  //variável para a contagem do tempo
-    static int s = 42;  
-    void *p = malloc(1024); //memória disponível para uso
+int main(void) {
+    void *b;
+    char *p, *end;
+    clock_t t;
 
-    int *retBrk;    
+    b = sbrk(0); //sbrk () incrementa o espaço de dados do programa em bytes de incremento.
+
+    p = (char *)b; // <-- Heap inicio == Heap fim
+    printf("Inicio: %10p\n", p);
+
+    end = p + 0xA; // Aumenta a heap em 10 char
     
-    t = clock();    //início da contagem do tempo para a alocação de memória
-    retBrk = brk(0);   //atribuição da memória necessária para o processo
+    t = clock();
+    brk(end);
     t = clock() - t; //cálculo do tempo
-    printf("Tempo de execucao brk(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000))); //exibição do tempo de execução para a atribuição de memória ao processo
 
-    printf("stack\t%10p\nbrk\t%10p\nheap\t%10p\n"
-            "static\t%10p\nstatic\t%10p\ntext\t%10p\n",
-            &p, retBrk, p, a, &s, segments);    //exibição dos endereços alocados em cada região da memória
-}
-int main(void){
-    segments();
-    exit(0);
-}
+    printf("Tempo de execucao brk(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000)));
 
+    // +------+ <-- Heap inicio
+    // |      |
+    // |        <-- Depois do brk(end), teve o aumento da heape
+    // |      |
+    // +------+ <-- Heap fim
+
+    printf("Fim: %10p\n", end);
+    while (p < end) {
+        *(p++) = 'A';
+    }
+
+    p = (char *)b; //Volta para o inicio 
+
+    printf("Valor de p[2]: %c\n",p[2]);
+
+    brk(b); // <-- Heap inicio == Heap fim
+
+    //printf("Valor de p[2]: %c\n",p[2]); //Caso seja executado, tera um Segmentation fault
+    
+    return 0;
+}
