@@ -12,7 +12,7 @@ Mateus Fernandes Doimo - Nº USP: 10691971</br>
 
 <b>:video_camera: Vídeo:</b> LINK AQUI<br><br>
 <b>:page_facing_up: Apresentação:</b> LINK AQUI<br>
-
+<br>
 <hr>
 
 <h3>:pencil: Descrição do trabalho:</h3>
