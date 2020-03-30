@@ -11,7 +11,7 @@ Mateus Fernandes Doimo - Nº USP: 10691971</br>
 </br>
 
 <b>:video_camera: Vídeo:</b> <a href="https://www.youtube.com/watch?v=npiAWzGkU50">https://www.youtube.com/watch?v=npiAWzGkU50</a><br><br>
-<b>:page_facing_up: Apresentação:</b> <a href="#">#</a><br>
+<b>:page_facing_up: Apresentação:</b> <a href="https://github.com/andrebpradof/sistemas-operacionais/tree/master/apresentacao">Trabalho 1 - Processos - grupo 08</a><br>
 <br>
 <hr>
 
