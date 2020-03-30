@@ -21,7 +21,7 @@ int main (void){
     clock_t t;  //variável para a contagem do tempo
 
     t = clock();    //início da contagem do tempo para o processo de abertura de um arquivo existente
-    fd = open("teste.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644); //chamada de sistema para abertura do arquivo
+    fd = open("teste.txt", O_WRONLY | O_CREAT | O_TRUNC); //chamada de sistema para abertura do arquivo
     t = clock() - t;    //cálculo do tempo
     printf("Tempo de execucao open(): %lf\n", ((double)t)/((CLOCKS_PER_SEC/1000))); //exibição do tempo de execução do processo de abertura do arquivo
 

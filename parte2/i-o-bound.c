@@ -14,28 +14,26 @@
 #include <sys/stat.h>
 #include <sys/fcntl.h>
 
-#define SIZE 1048576          //Lê 1MB do arquivo 
+#define tamanho 1048576          //Lê 1MB do arquivo 
 #define fileName "read.txt"    //Nome do arquivo de leitura
 
 int main(int argc, char const *argv[])
 {
 
-    char *buffer = calloc(SIZE, sizeof(char));    //Buffer para ler o arquivo
-    int file;                                     //Inteiro para receber o 'file descriptor'
-    int times = 10000;
+    char *buffer = calloc(tamanho, sizeof(char));    //Buffer para ler o arquivo
+    int arquivo;                                     //Inteiro para receber o 'arquivo descriptor'
+    int repetir = 10000;
 
-    file = open(fileName, O_RDONLY); // Abre o arquivo
+    arquivo = open(fileName, O_RDONLY); // Abre o arquivo
 
-    if(file < 0){                   //Verificação caso ocorra um erro na abertura do arquivo
+    if(arquivo < 0){      //Verificação caso ocorra um erro na abertura do arquivo
         perror("file");
         exit(1);
     }
 
-    printf("Arquivo para ser copiado aberto com sucesso\n");
+    for(int i=0; i<repetir; i++){
 
-    for(int i=0; i<times; i++){
-
-        int check = read(file, buffer, SIZE);
+        int check = read(arquivo, buffer, tamanho);
 
         if(check < 0){ //Verificação de erro da leitura do arquivo
             
@@ -44,21 +42,17 @@ int main(int argc, char const *argv[])
 
         }        
     }
-    if(write(STDOUT_FILENO, buffer, SIZE) < 0){   //Verificação de erro da escrita ao STDOUT
+    if(write(STDOUT_FILENO, buffer, tamanho) < 0){   //Verificação de erro da escrita ao STDOUT
         
         perror("stdout: ");
         exit(1);
 
     }
 
-    if(close(file) < 0){        //Verificação de erro do arquivo
+    if(close(arquivo) < 0){        //Verificação de erro do arquivo
         
         perror("file");
         exit(1);
-
-    }else{
-
-        printf("\n\nArquivo fechado com sucesso\n");
 
     }
     
