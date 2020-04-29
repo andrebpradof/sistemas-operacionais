@@ -99,8 +99,11 @@ int consome_info(void){
 
     if (indice != -1){
         
-        n_livre_buffer--;
-        n_ocup_buffer++;
+        n_livre_buffer++;
+        n_ocup_buffer--;
+
+        printf("\nLivre: %d\n", n_livre_buffer);
+        printf("Ocupado: %d\n", n_ocup_buffer);
 
         printf("\n\n[Consumidor diz:] Pid [%d] | Tid [%u] | Posição [%d] | [%c]\n", getpid(), (unsigned int)pthread_self(), indice, buffer[indice]);
         buffer[indice] = ' ';
@@ -120,8 +123,12 @@ int produz_info(char info){
     n_livre_buffer--;
     n_ocup_buffer++;
 
+    printf("\nLivre: %d\n", n_livre_buffer);
+    printf("Ocupado: %d\n", n_ocup_buffer);
+
     if (indice == -1){
         indice = n_ocup_buffer;
+        printf("\nINDICE == -1 então n_ocup_buffer e: %d\n", n_ocup_buffer);
     }
 
     if (push(&trafego_consumo, indice) == -1){
@@ -186,7 +193,7 @@ void *produtor(void* texto){
 
         pthread_mutex_lock(&mutex_estado_prod_cons);
 
-        if (n_livre_buffer == 0){ 
+        if (n_livre_buffer == 0 || n_ocup_buffer == 8){ 
             /* Se buffer vazio for 0, dorme */
             printf("\n[Produtor diz:] Vou dormir enquanto não tem trabalho!!\n");
             estado_producao = SLEEPING;                       // Dormir
