@@ -142,6 +142,7 @@ int produz_info(char info){
 
     buffer[indice] = info;
 
+    //
     printf("\n\nProdutor--> Produzi na posicao: %d\tValor:  %d\n",indice, buffer[indice]);
     printf("            Pid: %d\t\t        Tid: %u\n",getpid(),(unsigned int)pthread_self());
 
