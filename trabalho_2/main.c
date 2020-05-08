@@ -1,9 +1,12 @@
-/*
-* ProdutorConsumidor.c
-*
-*  Created on: Sep 19, 2009
-*      Author: Ricardo Bocchi
-*/
+//////////////////////////////////////////////////////////////////
+//  SSC0640 - Sistemas Operacionais I (2020)                    //
+//  Trabalho 02 - Comunicação. Sincronismos, Deadlock, Threads  //
+//                                                              //
+//  Alunos:                                                     //
+//  André Baconcelo Prado Furlanetti - Nº USP: 10748305         //
+//  Diego da Silva Parra             - Nº USP: 10716550         //
+//  Mateus Fernandes Doimo           - Nº USP: 10691971         //
+//////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,248 +17,247 @@
 #include <math.h>
 #include <syscall.h>
 #include <fcntl.h>
+#include <time.h>
 
-#define MAXBUFF 8 /*Máximo de buffer livre*/
-#define DORMINDO 0
-#define ACORDADO 1
-#define ACABADO 0
-#define PROCESSANDO 1
+#define TAM_BUFFER 8    // Tamanho do buffer
+#define NUM_INFO 20     // Numero de informacoes para processar
+#define SLEEPING 0      // Valor 0 para status dormindo   
+#define AWAKE 1         // Valor 1 para status acordado
 
-typedef struct apontador{/* Estrutura que aponta para nova posição de leitura ou escrita.. e mantem a ordem em uma fila*/
-   int livre;/*Posição do buffer*/
-   struct apontador *prox;/*próxima posição do buffer*/
-}APONTA;
+// struct da fila de consumo e producao
+typedef struct fila{
+    int posicao;        // Posicao para consumo ou producao
+    struct fila *prox;  // Proxima posicao para consumo ou producao
+} Fila;
 
-APONTA *fila_leitura_inicio = NULL, *fila_leitura_fim = NULL;/*Fila que controla buffer livre de leitura*/
-APONTA *fila_escrita_inicio = NULL, *fila_escrita_fim = NULL;/*Fila que controla buffer livre de escrita*/
+// struct do head da fila
+typedef struct head{
+    Fila *inicio;   // Ponteiro para inicio da fila
+    Fila *fim;      // Ponteiro para fim da fila
+} Head;
 
-void *Consumir(void* texto);
-void *produz(void* texto);
-int setFila(int posicao, APONTA **begin, APONTA **end);
-int getFila(APONTA **begin, APONTA **end);
+Head trafego_producao;  // Fila de producao
+Head trafego_consumo;   // Fila de consumo
 
-char bufferLimitado[MAXBUFF]; /*Buffer de trabalho*/
-int buff_empty = MAXBUFF; /*Buffer livre*/
-int buff_full = 0; /*Buffer ocupado*/
-int status_produz = ACORDADO;
-int status_consome = ACORDADO;/* Se estão dormindo ou acordados*/
-int status_processamento = PROCESSANDO;
+int buffer[TAM_BUFFER];     // Buffer com o numero TAM_BUFFER de posicoes
 
-pthread_mutex_t mutex =  PTHREAD_MUTEX_INITIALIZER; /* Mutex que controla o acesso ao buffer*/
-pthread_mutex_t mutex_status_buff =  PTHREAD_MUTEX_INITIALIZER; /*Mutex que controla a espera(dormir/acordar)*/
-pthread_cond_t  status_produtor = PTHREAD_COND_INITIALIZER; /* Suspende execução da Thread produtor*/
-pthread_cond_t  status_consumidor = PTHREAD_COND_INITIALIZER;/* Suspende execução da Thread consumidor*/
+int n_livre_buffer = TAM_BUFFER;    // Numero de info livres no buffer
+int n_ocup_buffer = 0;              // Numero de info ocupadas no buffer
+
+pthread_mutex_t mutex_estado_prod_cons = PTHREAD_MUTEX_INITIALIZER; // Mutex que verifica o estado (dormindo ou acordado)
+                                                                    // consumidor e do produtor
+pthread_mutex_t mutex_buffer = PTHREAD_MUTEX_INITIALIZER; // Mutex que controla o acesso ao buffer
+pthread_cond_t cond_produtor = PTHREAD_COND_INITIALIZER; // Thread do produtor           
+pthread_cond_t cond_consumidor = PTHREAD_COND_INITIALIZER; // Thread do consumidor
+
+int estado_consumo = AWAKE; // Seta o estado do consumidor para acordado
+int estado_producao = AWAKE; // Seta o estado do produtor para acordado
+
+int total_info = NUM_INFO; // Seta total de informações que seram transmitidas pelo buffer com o valor de NUM_INFO
+
+// Função que add um elemnto na fila recebida
+// Retorna 1 para sucesso ou -1 para erro
+int push(Head *head, int posicao){
+    Fila *nova = (Fila *)malloc(sizeof(Fila)); // Aloca um novo elemento da fila
+    if (nova == NULL){ // Caso ocorra erro
+        printf(">> Erro de memoria!");
+        return (-1);
+    }
+
+    nova->prox = NULL; 
+    nova->posicao = posicao;
+
+    if (head->fim == NULL){ // Se o fim for null significa que a fila esta vazia
+        head->inicio = nova; // Add o novo elemento no inicio
+    }
+    else{
+        head->fim->prox = nova; // Se não, aponta o prox do penultimo elemnto para o novo
+    }
+
+    head->fim = nova; // Coloca o novo elemento no fim
+
+    return (1);
+}
+
+// Retorna a posicao quardada no primeiro elemento da fila e o libera 
+int pop(Head *head){
+
+    int posicaoBuffer;
+    Fila *pt;
+
+    if (head->fim != NULL){
+        pt = head->inicio;
+        head->inicio = head->inicio->prox; //Passa próximo elemento para inicio
+
+        if (head->inicio == NULL) //Se inicio for nulo, fila acabou
+            head->fim = NULL;
+
+        posicaoBuffer = pt->posicao;
+        free(pt);
+        return (posicaoBuffer); //Retorna primeiro elemento
+    }
+
+    return -1;
+}
+
+// Acessa o buffer e consome na posicao indicada pela fila de trafego_consumo
+int consome_info(void){
+    int indice = pop(&trafego_consumo); // Pega o primeiro indice da fila
+
+    if (indice != -1){ // Caso não haja erro
+
+        // Printa o q foi consumido
+        printf("\n\nConsumidor--> Consumi na posicao: %d\tValor:  %d\n",indice, buffer[indice]);
+        printf("             Pid: %d\t\t        Tid: %u\n",getpid(),(unsigned int)pthread_self());        buffer[indice] = -1;
+        
+
+        n_livre_buffer++; // Aumenta o buffer liver
+        n_ocup_buffer--; // Diminui o buffer ocupado
+
+        // Add na fila de trafego_producao o indice do buffer q foi consumido
+        if (push(&trafego_producao, indice) == -1){ // Caso ocorra erro
+            printf(">> Erro de memoria!");
+            return -1;
+        }   
+    }else{
+        return -1;
+    }
+    return 0;
+}
+
+// Acessa o buffer e produz na posicao indicada pela fila trafego_producao
+int produz_info(char info){
+
+    int indice = pop(&trafego_producao);
+
+    if (indice == -1){ indice = n_ocup_buffer;}
+    
+    n_livre_buffer--;
+    n_ocup_buffer++;
+
+    if (push(&trafego_consumo, indice) == -1){
+        printf(">> Erro de memoria!");
+        exit(0);
+    }
+
+    buffer[indice] = info;
+
+    //
+    printf("\n\nProdutor--> Produzi na posicao: %d\tValor:  %d\n",indice, buffer[indice]);
+    printf("            Pid: %d\t\t        Tid: %u\n",getpid(),(unsigned int)pthread_self());
+
+    return 0;
+}
+
+void *consumidor(){
+
+    while (1){
+        pthread_mutex_lock(&mutex_estado_prod_cons); // Bloqueia os status para dormir
+
+        if (n_ocup_buffer == 0){
+            // Finalizou o numero de informacoes e o consumo no buffer
+            if (total_info == 0 && n_livre_buffer == 8){
+                printf("\nConsumidor--> Acabou o consumo\n\n\n");
+                break;
+            }
+
+            printf("\nConsumidor--> Dormir\n");
+            estado_consumo = SLEEPING;
+            pthread_cond_wait(&cond_consumidor, &mutex_estado_prod_cons); // Aguarda o sinal para voltar a consumir
+            estado_consumo = AWAKE;
+            printf("\nConsumidor--> Acordar\n");
+        }
+
+        pthread_mutex_unlock(&mutex_estado_prod_cons); // Liberar os status para dormir
+
+        pthread_mutex_lock(&mutex_buffer); // Liberar o buffer
+
+        // Consome a informacao da fila
+        if(consome_info() == -1){
+            exit(0);
+        }
+
+        pthread_mutex_lock(&mutex_estado_prod_cons);
+
+        if(estado_producao == SLEEPING){
+            printf("\nConsumidor--> Acordar o produtor\n");
+            sleep(rand() % 4);
+            pthread_cond_signal(&cond_produtor); // Envia sinal para o produtor acordar
+
+        }
+        pthread_mutex_unlock(&mutex_estado_prod_cons);
+
+        pthread_mutex_unlock(&mutex_buffer);
+
+        sleep(rand() % 10); // Tempo aleatorio para pausar o consumidor
+    }
+}
+void *produtor(){
+    
+    //Informacao 
+    int info[NUM_INFO] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19};
+
+    for (int i = 0; i < NUM_INFO; i++){
+
+        pthread_mutex_lock(&mutex_estado_prod_cons); // Bloquear os status para dormir
+
+        //Buffer vazio -> Produtor dorme
+        if (n_livre_buffer == 0 || n_ocup_buffer == 8){ 
+           
+            printf("\nProdutor--> Dormir\n");
+            estado_producao = SLEEPING; // Dormir
+            pthread_cond_wait(&cond_produtor, &mutex_estado_prod_cons); // Aguarda o sinal para voltar a produzir
+            estado_producao = AWAKE; // Acorddado
+            printf("\nProdutor--> Acordar\n");
+        }
+
+        pthread_mutex_unlock(&mutex_estado_prod_cons); // Libera os status para dormir 
+
+        pthread_mutex_lock(&mutex_buffer); // Bloquear  buffer
+
+        produz_info(info[i]); // Produz informacao
+
+        if (estado_consumo == SLEEPING){ 
+            printf("\nProdutor--> Acordar consumidor\n");
+            sleep(rand() % 2);
+            pthread_cond_signal(&cond_consumidor); // Envia sinal para o consumidor acordar
+        }
+
+        pthread_mutex_unlock(&mutex_estado_prod_cons); // Libera os status para dormir 
+
+        pthread_mutex_unlock(&mutex_buffer); // Libera buffer
+
+        total_info--; 
+
+        sleep(rand() % 5); // Tempo aleatorio para pausar o produtor
+    }
+}
 
 int main(int argc, char *argv[]){
 
-   /* Threads - produtora e consumidora*/
-   pthread_t threadConsumidor;
-   pthread_t threadProdutor;
+    // Declaracao das threads
+    pthread_t thread_consumidor; 
+    pthread_t thread_produtor;
 
-   char *texto[] = { "Produtor produziu:" , "Consumidor consumiu:" };
-
-   /* Cria novas Threads para os consumidores */
-   if (pthread_create(&threadConsumidor, NULL, Consumir, (void*) texto[1]) != 0){
-      sprintf(stderr, "Erro ao criar thread %d", errno);
-      exit(1);
-   }
-   /* Cria novas Threads para os produtores */
-   if (pthread_create(&threadProdutor, NULL, produz, (void*) texto[0]) != 0){
-      sprintf(stderr, "Erro ao criar thread %d", errno);
-      exit(1);
-   }
-
-   /* Espera termino de processamento da Thread e a finaliza */
-   if (pthread_join(threadConsumidor, NULL) != 0){
-          sprintf(stderr, "\nErro ao finalizar thread %d\n", errno);
-          exit(1);
+    // Threads para os consumidores
+     if (pthread_create(&thread_consumidor, NULL, consumidor, (void*)0) != 0){
+        printf("Erro ao criar a thread do consumidor");
+        exit(1);
     }
-   if (pthread_join(threadProdutor, NULL) != 0){
-          sprintf(stderr, "\nErro ao finalizar thread %d\n", errno);
-          exit(1);
+    // Threads para os produtores
+    if (pthread_create(&thread_produtor, NULL, produtor,  (void*)0) != 0){
+        printf("Erro ao criar a thread do produtor");
+        exit(1);
     }
 
-   return(0);
-}
-
-void *Consumir(void* texto){
-
-   int c;
-
-   for(;;){
-
-      /*Semáforo para definir status do consumidor - Dormindo ou acordado*/
-      pthread_mutex_lock(&mutex_status_buff);
-
-      /* Se buffer ocupado for igual a zero espera até produtor avisar que tem produção no buffer*/
-      if(buff_full == 0){
-
-         if (status_processamento == ACABADO && buff_empty == 8){
-            printf("\n[Consumidor diz:] Por hora acabou meu consumo, vou embora. Até\n\n\n");
-            return;
-         }
-
-         printf("\n[Consumidor diz:] Vou dormir enquanto não tem consumo!!\n");
-         status_consome = DORMINDO;
-         pthread_cond_wait(&status_consumidor, &mutex_status_buff);
-         status_consome = ACORDADO;
-         printf("\n[Consumidor diz:] Nova produção chegando, vou consumir!!\n");
-
-      }
-
-      pthread_mutex_unlock(&mutex_status_buff);
-
-      /*Semáforo para exclusão mutua para controlar posições do buffer */
-      pthread_mutex_lock(&mutex);
-
-      /*Pega posição da fila*/
-      c = getFila(&fila_leitura_inicio, &fila_leitura_fim);
-
-      if (c != ' ' || c != -1){
-         printf("\n\n[Consumidor diz:] Pid [%d] | Tid [%u] | Posição [%d] | %s [%c]\n",getpid(), (unsigned int)pthread_self(), c, (char*)texto, bufferLimitado[c]);
-
-         bufferLimitado[c] = ' ';/* Limpa buffer após leitura */
-         buff_empty++; /*Incrementa buffer livre*/
-         buff_full--; /*Decrementa buffer ocupado*/
-
-         /*Manda posição do buffer livre para fila*/
-         setFila(c, &fila_escrita_inicio, &fila_escrita_fim);
-
-         /*Semáforo para verificação do status do produtor - Dormindo ou acordado*/
-         pthread_mutex_lock(&mutex_status_buff);
-
-         if(status_produz == DORMINDO){/*Se estiver dormindo manda sinal para avisar que tem buffer livre*/
-            printf("\n[Consumidor diz:] O produtor está dormindo, vou tocar a campainha, pois tem buffer livre!!\n");
-            sleep(rand() % 4);
-            pthread_cond_signal(&status_produtor);
-
-         }
-
-         /* Libera semáforo */
-         pthread_mutex_unlock(&mutex_status_buff);
-
-      }else
-         sprintf(stderr, "\n\nErro na leitura!!\n\n", errno);
-
-      /* Libera semáforo */
-      pthread_mutex_unlock(&mutex);
-
-      sleep(rand() % 10);
-   }
-
-}
-
-void *produz(void* texto){
-
-   /* Produção */
-   char abc[23] = "abcdefghijlmnopqrstuvxz";
-   int i;
-   int posicao_buffer;/*Controla posição do buffer pronta para ser escrita*/
-
-
-   for(i=0;i<=22;i++){
-
-     //if (i == 22){
-        //printf("\n[Produtor diz:] Meu trabalho acaba por aqui, ultimo produto depois vou embora. Até\n");
-        //status_processamento = ACABADO;
-     //}
-
-      /*Semáforo para definir status do produtor - Dormindo ou acordado*/
-      pthread_mutex_lock(&mutex_status_buff);
-
-      if (buff_empty == 0 || buff_full == 8){/* Se buffer vazio for 0, dorme */
-
-         printf("\n[Produtor diz:] Vou dormir enquanto não tem trabalho!!\n");
-         status_produz = DORMINDO;
-         pthread_cond_wait(&status_produtor, &mutex_status_buff); /* Enquanto não tiver onde escrever, processo dorme.. Só libera quando receber um sinal de que pode começar de novo*/
-         status_produz = ACORDADO;
-         printf("\n[Produtor diz:] Tocou a campainha, vou trabalhar!!\n");
-
-      }
-
-      pthread_mutex_unlock(&mutex_status_buff);
-
-      /*Semáforo para exclusão mutua para controlar posições do buffer */
-      pthread_mutex_lock(&mutex);
-
-      buff_empty--;/*Decrementa espaço livre*/
-      buff_full++;/*Incrementa espaço ocupado*/
-
-      /*Recebe posição da fila, se retorno for -1 quer dizer que a fila não inicializou.. então ele deve pegar do controle do buffer*/
-      if ((posicao_buffer = getFila(&fila_escrita_inicio, &fila_escrita_fim)) == -1)/*pega posição livre do buffer*/
-         posicao_buffer = buff_full;
-
-      /*Manda posição escrita para fila*/
-      if (setFila(posicao_buffer, &fila_leitura_inicio, &fila_leitura_fim) == -1)/*Adiciona na fila*/
-         sprintf(stderr,"\n\nErro ao inserir na fila: %d!!\n\n", errno);
-
-      /*Preenche buffer*/
-      bufferLimitado[posicao_buffer] = abc[i];
-
-      printf("\n\n[Produtor diz:] Pid [%d] | Tid [%u] | Posição [%d] | %s [%c] \n",getpid(),(unsigned int)pthread_self(), posicao_buffer, (char*) texto, bufferLimitado[posicao_buffer]);
-
-      /*Semáforo para verificação do status do consumidor - Dormindo ou acordado*/
-      pthread_mutex_lock(&mutex_status_buff);
-
-      if (status_consome == DORMINDO){/* Se consumidor estiver dormindo, acorda ele.. pois há produção*/
-
-         printf("\n[Produtor diz:] O consumidor está dormindo, vou avisar que tem produto no buffer!!\n");
-         sleep(rand() % 2);
-         pthread_cond_signal(&status_consumidor);
-
-      }
-
-      pthread_mutex_unlock(&mutex_status_buff);
-
-      pthread_mutex_unlock(&mutex);
-
-      /* Libera arquivo*/
-
-      sleep(rand() % 5);/* Processo dorme por tempo aleatório */
-
-  }
-
-  printf("\n[Produtor diz:] Meu trabalho acaba por aqui, ultimo produto depois vou embora. Até\n");
-  status_processamento = ACABADO;
-
-}
-
-int setFila(int posicao, APONTA **begin, APONTA **end){
-
-   APONTA *new;
-
-   if (!(new = (APONTA*)malloc(sizeof(APONTA)))){
-      sprintf(stderr, "Erro na alocação de memória %d", errno);
-      exit(-1);
-   }
-
-   new->livre = posicao;
-   new->prox = NULL;
-
-   (*end != NULL) ? ((*end)->prox = new) : (*begin = new);
-
-   *end = new;/*Ajusta ponteiro fim para ultimo novo*/
-
-   return(0);
-}
-
-int getFila(APONTA **begin, APONTA **end){
-
-   APONTA *pt;
-   int posicaoBuffer;
-
-   if(*end != NULL)
-   {
-      pt = *begin;
-      *begin = (*begin)->prox;/* Passa próximo elemento para inicio*/
-
-      if(*begin == NULL)/*Se inicio for nulo, fila acabou*/
-         *end = NULL;
-
-      posicaoBuffer = pt->livre;
-      free(pt);
-      return(posicaoBuffer);/* Retorna primeiro elemento*/
-   }
-
-   return(-1);
+    // Aguarda finalizar as threads
+    if (pthread_join(thread_consumidor, NULL) != 0){
+        printf("Erro ao finalizar a thread do consumidor");
+        exit(1);
+    }
+    if (pthread_join(thread_produtor, NULL) != 0){
+        printf("Erro ao finalizar a thread do produtor");
+        exit(1);
+    }
+    return 0;
 }
