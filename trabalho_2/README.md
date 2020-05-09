@@ -10,7 +10,7 @@ Mateus Fernandes Doimo - Nº USP: 10691971</br>
 
 </br>
 
-<b>:video_camera: Vídeo:</b> <a href="https://youtu.be/bw-eYroNs7w">LINK AQUI</a><br><br>
+<b>:video_camera: Vídeo:</b> <a href="https://youtu.be/bw-eYroNs7w">https://youtu.be/bw-eYroNs7w</a><br><br>
 <b>:page_facing_up: Apresentação:</b> <a href="https://github.com/andrebpradof/sistemas-operacionais/tree/master/trabalho_2/apresentacao">Trabalho 2 - Produtor e Consumidor - grupo 08</a><br>
 <br>
 <hr>
