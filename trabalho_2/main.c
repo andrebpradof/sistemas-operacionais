@@ -52,9 +52,9 @@ pthread_cond_t cond_consumidor = PTHREAD_COND_INITIALIZER; // Thread do consumid
 int estado_consumo = AWAKE; // Seta o estado do consumidor para acordado
 int estado_producao = AWAKE; // Seta o estado do produtor para acordado
 
-int total_info = NUM_INFO; // Seta total de informações que seram transmitidas pelo buffer com o valor de NUM_INFO
+int total_info = NUM_INFO; // Seta total de informações que serao transmitidas pelo buffer com o valor de NUM_INFO
 
-// Função que add um elemnto na fila recebida
+// Função que adiciona um elemento na fila recebida
 // Retorna 1 para sucesso ou -1 para erro
 int push(Head *head, int posicao){
     Fila *nova = (Fila *)malloc(sizeof(Fila)); // Aloca um novo elemento da fila
@@ -74,13 +74,13 @@ int push(Head *head, int posicao){
     return (1);
 }
 
-// Retorna a posicao quardada no primeiro elemento da fila e o libera 
+// Retorna a posicao guardada no primeiro elemento da fila e o libera 
 int pop(Head *head){
     int posicaoBuffer;
     Fila *pt;
     if (head->fim != NULL){
         pt = head->inicio;
-        head->inicio = head->inicio->prox; //Passa próximo elemento para inicio
+        head->inicio = head->inicio->prox; //Passa o próximo elemento para inicio
         if (head->inicio == NULL) //Se inicio for nulo, fila acabou
             head->fim = NULL;
         posicaoBuffer = pt->posicao;
@@ -98,9 +98,9 @@ int consome_info(void){
         printf("\n\nConsumidor--> Consumi na posicao: %d\tValor:  %d\n",indice, buffer[indice]);
         printf("             Pid: %d\t\t        Tid: %u\n",getpid(),(unsigned int)pthread_self());        
         buffer[indice] = -1;
-        n_livre_buffer++; // Aumenta o buffer liver
+        n_livre_buffer++; // Aumenta o buffer livre
         n_ocup_buffer--; // Diminui o buffer ocupado
-        // Add na fila de trafego_producao o indice do buffer que foi consumido
+        // Adiciona o indice do buffer que foi consumido na fila de trafego_producao
         if (push(&trafego_producao, indice) == -1){ // Caso ocorra erro
             printf(">> Erro de memoria!");
             return -1;
@@ -119,11 +119,11 @@ int produz_info(char info){
     }
     n_livre_buffer--;
     n_ocup_buffer++;
-    if (push(&trafego_consumo, indice) == -1){ // Add o indice onde foi produzido na fila de trafego do consumidor
+    if (push(&trafego_consumo, indice) == -1){ // Adiciona o indice onde foi produzido na fila de trafego do consumidor
         printf(">> Erro de memoria!");
         exit(0);
     }
-    buffer[indice] = info; // Add a producao no buffer
+    buffer[indice] = info; // Adiciona a producao no buffer
     printf("\n\nProdutor--> Produzi na posicao: %d\tValor:  %d\n",indice, buffer[indice]);
     printf("            Pid: %d\t\t        Tid: %u\n",getpid(),(unsigned int)pthread_self());
     return 0;
@@ -172,11 +172,11 @@ void *produtor(){
             printf("\nProdutor--> Dormir\n");
             estado_producao = SLEEPING; // Dormir
             pthread_cond_wait(&cond_produtor, &mutex_estado_prod_cons); // Aguarda o sinal para voltar a produzir
-            estado_producao = AWAKE; // Acorddado
+            estado_producao = AWAKE; // Acordado
             printf("\nProdutor--> Acordar\n");
         }
         pthread_mutex_unlock(&mutex_estado_prod_cons); // Libera os status para dormir 
-        pthread_mutex_lock(&mutex_buffer); // Bloquear  buffer
+        pthread_mutex_lock(&mutex_buffer); // Bloquear buffer
         produz_info(info[i]); // Produz informacao
         if (estado_consumo == SLEEPING){ 
             printf("\nProdutor--> Acordar consumidor\n");
