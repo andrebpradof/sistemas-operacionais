@@ -15,7 +15,7 @@ Mateus Fernandes Doimo - Nº USP: 10691971</br>
 <hr>
 
 <h3>Trabalho 02 - Comunicação. Sincronismos, Deadlock, Threads</h3>
-<p>Entrega: 30/04/2020</p>
+<p>Entrega: 09/05/2020</p>
 :link:<a href="https://github.com/andrebpradof/sistemas-operacionais/tree/master/trabalho_2"> Códigos</a>
 
 <hr>
