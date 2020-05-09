@@ -94,13 +94,13 @@ int pop(Head *head){
 int consome_info(void){
     int indice = pop(&trafego_consumo); // Pega o primeiro indice da fila
     if (indice != -1){ // Caso não haja erro
-        // Printa o q foi consumido
+        // Printa o que foi consumido
         printf("\n\nConsumidor--> Consumi na posicao: %d\tValor:  %d\n",indice, buffer[indice]);
         printf("             Pid: %d\t\t        Tid: %u\n",getpid(),(unsigned int)pthread_self());        
         buffer[indice] = -1;
         n_livre_buffer++; // Aumenta o buffer liver
         n_ocup_buffer--; // Diminui o buffer ocupado
-        // Add na fila de trafego_producao o indice do buffer q foi consumido
+        // Add na fila de trafego_producao o indice do buffer que foi consumido
         if (push(&trafego_producao, indice) == -1){ // Caso ocorra erro
             printf(">> Erro de memoria!");
             return -1;
@@ -114,7 +114,7 @@ int consome_info(void){
 // Acessa o buffer e produz na posicao indicada pela fila trafego_producao
 int produz_info(char info){
     int indice = pop(&trafego_producao); // Pega a posição que ira produzir
-    if (indice == -1){ // Caso a fila esteja fazia
+    if (indice == -1){ // Caso a fila esteja vazia
         indice = n_ocup_buffer; // Utiliza a quantidade ocupada do buffer como indice
     }
     n_livre_buffer--;
