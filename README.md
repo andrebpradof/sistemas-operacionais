@@ -23,9 +23,3 @@ Mateus Fernandes Doimo - Nº USP: 10691971</br>
 <h3>Trabalho 03 - Gerenciamento de MemóriaTarefa</h3>
 <p>Entrega: ?</p>
 :construction:<a href="#"> Em breve</a>
-
-<hr>
-
-<h3>Trabalho 04 - Gerenciamento de E/S e Sistemas de ArquivosTarefa</h3>
-<p>Entrega: ?</p>
-:construction:<a href="#"> Em breve</a>
