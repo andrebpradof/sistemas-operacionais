@@ -1,7 +1,9 @@
 #include <iostream>
 #include <list>
+#include <string>
+using namespace std;
 
-#define TAM_RAM = 64;
-#define TAM_DISCO = 128;
-#define TAM_PAGE = 4;
+const int TAM_RAM = 64;
+const int TAM_DISCO = 128;
+const int TAM_PAGE = 4;
 

@@ -1,6 +1,6 @@
 #include "Head.h"
 #include "Memoria.h"
-#include "GerenciamentoProcesos.h"
+#include "GerenciamentoProcessos.h"
 
 class MemoriaVirtual
 {
