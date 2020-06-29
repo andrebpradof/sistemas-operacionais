@@ -1,5 +1,6 @@
 #include "Head.h"
 #include "Memoria.h"
+#include "GerenciamentoProcesos.h"
 
 class MemoriaVirtual
 {
@@ -9,5 +10,5 @@ public:
     int ocupacao;
     Memoria ram;
     Memoria disco;
-    MemoriaVirtual(/* args */);
+    MemoriaVirtual();
 };
