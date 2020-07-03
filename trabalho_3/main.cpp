@@ -7,6 +7,7 @@ int main(int argc, char const* argv[])
 	int tamanho, pid, endereco;
 	MemoriaVirtual memoria;
 
+	// Imprime as configuracoes pre definidas da memoria virtual
 	printf("\t\tSIMULADOR DE GERENCIADOR DE MOMORIA VIRTUAL\n\n");
 
 	printf("Configuracoes da memoria: \n\n");
@@ -15,7 +16,7 @@ int main(int argc, char const* argv[])
 	printf("\t\t                  %02d Paginas\t                    %02d Paginas \t\t\t %02d Paginas\n\n", TAM_RAM/TAM_PAGE, TAM_DISCO/TAM_PAGE, (TAM_DISCO + TAM_RAM)/TAM_PAGE);
 	printf("\tTamnho da pagina de disco: %02d Bytes\n\n", TAM_PAGE);
 
-
+	// While de comandos
 	while (comandos != 'q') {
 		pid = tamanho = endereco = 0;
 		cout << ">> Entre com o comando: ";
@@ -24,33 +25,33 @@ int main(int argc, char const* argv[])
 
 		switch (tolower(comandos))
 		{
-		case 'c':
+		case 'c': // Cria processo
 			cin >> pid >> tamanho;
 			memoria.alocarProcesso(pid, tamanho);
 			break;
-		case 'p':
+		case 'p': // Write/read
 			cin >> pid >> endereco;
 			memoria.wr(pid, endereco);
 			break;
-		case 'i':
+		case 'i': // I/0
 			cin >> pid >> endereco;
 			memoria.io(pid, endereco);
 			break;
-		case 'b':
+		case 'b': // Printa os dados de um processo
 			cin >> pid;
 			memoria.imprimeProcesso(pid);
 			break;
-		case 'a':
+		case 'a': // Printa todos os processos ativos
 			memoria.imprimeProcessosAtivos();
 			break;
 		case 'm':
-			cin >> pid;
+			cin >> pid; // Mata um processo
 			memoria.matarProcesso(pid);
 			break;
-		case 'v':
+		case 'v': // Printa a memoria virtual
 			memoria.imprimeMemoriaVirtual();
 			break;
-		case 'h':
+		case 'h': // Ajuda
 			cout << "\n##########   AJUDA   ##########" << endl << endl;
 			cout << "Comandos:" << endl;
 			cout << "\tC: [cria um novo processo]                - C pid tamanho" << endl;
@@ -64,6 +65,7 @@ int main(int argc, char const* argv[])
 			cout << "\tQ: [Encerrar programa]                    - Q" << endl;
 			cout << endl;
 		default:
+			cout << "# Comando invalido" << endl << endl;
 			break;
 		}
 	}

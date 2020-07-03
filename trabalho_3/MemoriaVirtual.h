@@ -13,9 +13,10 @@ public:
 	int ocupacao; // Em paginas de disco
 	Memoria ram;
 	Memoria disco;
-	list<Processo> lista_processos_ativos;
+	list<Processo> lista_processos_ativos; // Lista de processos ativos
 	list<Processo>::iterator ite_lista_pros;
 
+	// Metodos
 	MemoriaVirtual();
 	int alocarProcesso(int pid, int tamanho);
 	int matarProcesso(int pid);

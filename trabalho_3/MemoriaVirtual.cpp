@@ -6,10 +6,10 @@ MemoriaVirtual::MemoriaVirtual(){
 	this->ocupacao = 0; // Em paginas de disco
 	this->tam_total = TAM_DISCO + TAM_RAM; // Em Bytes
 
-	Memoria ram(TAM_RAM);
+	Memoria ram(TAM_RAM); // Cria a RAM com o tamanho definido
 	this->ram = ram;
 
-	Memoria disco(TAM_DISCO);
+	Memoria disco(TAM_DISCO); // Cria o disco com o tamanho definido
 	this->disco = disco;
 
 	this->ram.ocupacao = 0; // Em paginas de disco
@@ -18,47 +18,50 @@ MemoriaVirtual::MemoriaVirtual(){
 	this->disco.capacidade_bytes = TAM_DISCO; // Em Bytes
 }
 
+// Aloca um novo processo
 int MemoriaVirtual::alocarProcesso(int pid, int tamanho) {
 	
-	Processo temp(pid, tamanho);    //Variavel temporaria para processos
+	Processo temp(pid, tamanho); //Variavel temporaria para processos
 
-	if (consultaProcesso(pid)) {    //Antes de alocar, consulta se o processo ja existe
+	if (consultaProcesso(pid)) { //Antes de alocar, consulta se o processo ja existe
 		cout << "# Processo ja existe!" << endl << endl;
 		return 0;
 	}
 
-	if ((this->ocupacao + tamanho) > this->tam_total) {     //Verifica se ha espaco suficiente para o processo na memoria virtual
+	if ((this->ocupacao + tamanho) > this->tam_total) { //Verifica se ha espaco suficiente para o processo na memoria virtual
 		cout << "# Nao ha memoria suficiente para o processo!" <<endl << endl;
 		return 0;
 	}
-	else {      //Se houver espaço na memoria, o processo e inserido na lista de processos ativos
-		temp.paginas_disco = calculaNumPaginas(tamanho);
-		lista_processos_ativos.push_back(temp);
-		alocaMemoria(pid, tamanho);
+	else { //Se houver espaço na memoria, o processo e inserido na lista de processos ativos e alocado na memoria
+		temp.paginas_disco = calculaNumPaginas(tamanho); // calcula o numero de paginas q serao alocadas
+		lista_processos_ativos.push_back(temp); // Add na lsita de processos
+		alocaMemoria(pid, tamanho); // Aloca a memoria para o processo
 		printf("# Processo %02d criado \n# Paginas alocadas: %02d\n\n", temp.pid, temp.paginas_disco);
 	}
 	return 1;
 }
 
+// Aloca a memoria para um novo processo
 int MemoriaVirtual::alocaMemoria(int pid, int tamanho){
-	int num_paginas = calculaNumPaginas(tamanho);
+	int num_paginas = calculaNumPaginas(tamanho); // Calcula o numero de paginas q serao alocadas
 	int ocupacao_pag_disco = TAM_PAGE;
 	int cont = 0;
 	
+	// Enquanto todas as paginas nao forem alocadas
 	while (num_paginas != 0) { 
-		if (num_paginas == 1) {
+		if (num_paginas == 1) { // Caso nao necessite preencher a pagina inteira
 			ocupacao_pag_disco = tamanho - cont * TAM_PAGE;
 		}
 
-		PaginaDeDisco pagina_nova(cont, pid, ocupacao_pag_disco);
+		PaginaDeDisco pagina_nova(cont, pid, ocupacao_pag_disco); // Nova pagina
 		if (this->ram.ocupacao < this->ram.getCapEmPagDisco()) { // Cabe na RAM sem a necessidade de swapping
-			this->ram.lista_paginas_de_disco.push_back(pagina_nova);
-			this->ram.ocupacao++;
+			this->ram.lista_paginas_de_disco.push_back(pagina_nova); // Add na lista da RAM
+			this->ram.ocupacao++; // Ajustes de ocupacao
 			this->ocupacao++;
 			num_paginas--;
 			cont++;
 		}
-		else { // Precisa realizar swapping
+		else { // Precisa realizar swapping --> Algoritmo do relogio na alocacao
 			while (true) { // Busca ate encontrar uma pagina de disco com r = 0
 				if (this->ram.lista_paginas_de_disco.front().r == 0) {
 					// Colocara a pagina com o bit r = 0 no disco
@@ -82,6 +85,7 @@ int MemoriaVirtual::alocaMemoria(int pid, int tamanho){
 	return 1;
 }
 
+// Calcula o numero de pagina com base em um tamanho em bytes
 int MemoriaVirtual::calculaNumPaginas(int tamanho) {
 	int num_paginas = 0;
 
@@ -93,22 +97,23 @@ int MemoriaVirtual::calculaNumPaginas(int tamanho) {
 	return num_paginas;
 }
 
+// Acessa uma pagina de disco --> Faz swapping utilizando o algoritmo do relogio
 int MemoriaVirtual::acessaMemoria(int pid, int endereco) {
 	
-	if (!consultaProcesso(pid)) {
+	if (!consultaProcesso(pid)) { // Se o processo nao existir
 		cout << "# Processo nao existe" << endl << endl;
 		return 0;
 	}
 
 	
-	int pag_disco = (int) endereco / TAM_PAGE;
+	int pag_disco = (int) endereco / TAM_PAGE; // Calcula a pagina q deve ser acessada
 
 	// Procur na RAM
 	for (this->ram.iterador = this->ram.lista_paginas_de_disco.begin();
 		this->ram.iterador != this->ram.lista_paginas_de_disco.end(); this->ram.iterador++) {
 		
 		if ((this->ram.iterador->endereco == pag_disco) && (this->ram.iterador->pid == pid)) {
-			this->ram.iterador->r = 1;
+			this->ram.iterador->r = 1; // Coloca 1 no bit r
 			return 1;
 		}
 	}
@@ -155,26 +160,26 @@ int MemoriaVirtual::acessaMemoria(int pid, int endereco) {
 	cout << "# Endereco nao encontrado" << endl << endl;
 	return 0;
 }
-
+// Remove o processo da lista de processos e desaloca as paginas desse processo
 int MemoriaVirtual::matarProcesso(int pid) {
 	int flag = 1;
 
-	if (!consultaProcesso(pid)) {
+	if (!consultaProcesso(pid)) { // Se o processo nao existir
 		cout << "# Processo nao esta ativo" << endl << endl;
 		return 0;
 	}
 
-	// Procura na RAM
-	if (this->ram.lista_paginas_de_disco.size() != 0) {
+	// Desaloca as paginas da RAM
+	if (this->ram.lista_paginas_de_disco.size() != 0) { // Se a RAM estiver vazia
 		this->ram.iterador = this->ram.lista_paginas_de_disco.begin();
-		while (flag) {
+		while (flag) { // Enquanto nao desalocar todas as paginas
 			flag = 0;
-			if (this->ram.iterador->pid == pid) {
+			if (this->ram.iterador->pid == pid) { // Quando encontra uma pagina para desalocar
 				flag = 1;
-				this->ram.lista_paginas_de_disco.erase(this->ram.iterador);
-				if (this->ram.lista_paginas_de_disco.size() == 0)
+				this->ram.lista_paginas_de_disco.erase(this->ram.iterador); // Desaloca
+				if (this->ram.lista_paginas_de_disco.size() == 0) // Lista fazia
 					break;
-				this->ram.iterador = this->ram.lista_paginas_de_disco.begin();
+				this->ram.iterador = this->ram.lista_paginas_de_disco.begin(); // Renova o iterator
 				this->ram.ocupacao--;
 				this->ocupacao--;
 			}
@@ -183,7 +188,7 @@ int MemoriaVirtual::matarProcesso(int pid) {
 		}
 	}
 
-	// Procura no disco
+	// Desaloca as paginas do disco
 	if (this->disco.lista_paginas_de_disco.size() != 0) {
 		this->disco.iterador = this->disco.lista_paginas_de_disco.begin();
 		flag = 1;
@@ -247,6 +252,7 @@ void MemoriaVirtual::imprimeProcessosAtivos() { //Consulta todos os processos da
 	cout << endl;
 }
 
+// Realiza o I/O
 void MemoriaVirtual::io(int pid, int endereco) {
 	if (acessaMemoria(pid, endereco))
 		cout << "# Operacao de I/O realizada" << endl << endl;
@@ -254,6 +260,7 @@ void MemoriaVirtual::io(int pid, int endereco) {
 		cout << "# Erro na opecao de I/O" << endl << endl;
 }
 
+// Realiza a W/R
 void MemoriaVirtual::wr(int pid, int endereco) {
 	if (acessaMemoria(pid, endereco))
 		cout << "# Operacao de Write/Read realizada" << endl << endl;

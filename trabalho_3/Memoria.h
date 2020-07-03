@@ -8,11 +8,10 @@ private:
 public:
 	int ocupacao;
 	int capacidade_bytes;
-	list<PaginaDeDisco> lista_paginas_de_disco;
-	list<PaginaDeDisco>::iterator iterador;
+	list<PaginaDeDisco> lista_paginas_de_disco; // Lista de paginas de disco da memoria
+	list<PaginaDeDisco>::iterator iterador; 
 	Memoria();
 	Memoria(int cap_bytes);
-	void mostrarStatus();
 	int getCapEmPagDisco();
 };
 
