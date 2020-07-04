@@ -8,7 +8,7 @@ int main(int argc, char const* argv[])
 	MemoriaVirtual memoria;
 
 	// Imprime as configuracoes pre definidas da memoria virtual
-	printf("\t\tSIMULADOR DE GERENCIADOR DE MOMORIA VIRTUAL\n\n");
+	printf("\t\t\t\tSIMULADOR DE GERENCIADOR DE MOMORIA VIRTUAL\n\n");
 
 	printf("Configuracoes da memoria: \n\n");
 	printf("\tTamnho das memorias:\n");
