@@ -22,7 +22,6 @@ Mateus Fernandes Doimo - Nº USP: 10691971</br>
 #### Executar programa:
 `$ ./memoria`
 
-<br>
 <hr>
 <h3>:pencil: Descrição do trabalho:</h3>
 <p>Desenvolver um simulador  de gerenciamento de memória virtual com paginação</p>
