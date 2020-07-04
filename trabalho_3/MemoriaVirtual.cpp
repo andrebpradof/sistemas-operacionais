@@ -274,7 +274,12 @@ void MemoriaVirtual::imprimeMemoriaVirtual() {      //Percorre toda a memoria vi
 
 	printf("# Capacidade: %02d Paginas\t Ocupacao: %02d paginas\n\n", this->ram.getCapEmPagDisco(), this->ram.ocupacao);
 
-    for(PaginaDeDisco p : ram.lista_paginas_de_disco) {     //Imprime as paginas de disco da RAM
+    for(PaginaDeDisco p : this->ram.lista_paginas_de_disco) {     //Imprime as paginas de disco da RAM
+
+		if (p.endereco == this->ram.lista_paginas_de_disco.front().endereco && p.pid == this->ram.lista_paginas_de_disco.front().pid) {
+			printf("# Pagina ID: %02d \t Pid: %02d \t Ocupacao: %02d \t r: %d <-- Ponteiro\n", p.endereco, p.pid, p.ocupacao, p.r);
+		}
+
         printf("# Pagina ID: %02d \t Pid: %02d \t Ocupacao: %02d \t r: %d \n", p.endereco, p.pid, p.ocupacao, p.r);
     }
 	cout << endl;
@@ -283,7 +288,7 @@ void MemoriaVirtual::imprimeMemoriaVirtual() {      //Percorre toda a memoria vi
 
 	printf("# Capacidade: %02d Paginas\t Ocupacao: %02d paginas\n\n", this->disco.getCapEmPagDisco(), this->disco.ocupacao);
 
-    for(PaginaDeDisco p : disco.lista_paginas_de_disco) {   //Imprime as paginas de disco do disco
+    for(PaginaDeDisco p : this->disco.lista_paginas_de_disco) {   //Imprime as paginas de disco do disco
         printf("# Pagina ID: %02d \t Pid: %02d \t Ocupacao: %02d \t r: %d \n", p.endereco, p.pid, p.ocupacao, p.r);
     }
 
