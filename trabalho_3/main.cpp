@@ -7,14 +7,23 @@ int main(int argc, char const* argv[])
 	int tamanho, pid, endereco;
 	MemoriaVirtual memoria;
 
+	ifstream arquivo("input.txt");
+
+	//### Para pegar os comandos do arquivo input.txt, descoemnte o if abaixo
+	/*
+	if (arquivo.is_open()) {
+		cin.rdbuf(arquivo.rdbuf());
+	}
+	*/
+
 	// Imprime as configuracoes pre definidas da memoria virtual
 	printf("\t\t\t\tSIMULADOR DE GERENCIADOR DE MOMORIA VIRTUAL\n\n");
 
 	printf("Configuracoes da memoria: \n\n");
-	printf("\tTamnho das memorias:\n");
-	printf("\t\tMemoria primaria: %02d Bytes \tMemoria secundaria: %02d Bytes \tMemoria Virtual: %02d Bystes\n", TAM_RAM, TAM_DISCO, TAM_DISCO + TAM_RAM);
+	printf("\tTamanho das memorias:\n");
+	printf("\t\tMemoria primaria: %02d Bytes \tMemoria secundaria: %02d Bytes \tMemoria Virtual: %02d Bytes\n", TAM_RAM, TAM_DISCO, TAM_DISCO + TAM_RAM);
 	printf("\t\t                  %02d Paginas\t                    %02d Paginas \t\t\t %02d Paginas\n\n", TAM_RAM/TAM_PAGE, TAM_DISCO/TAM_PAGE, (TAM_DISCO + TAM_RAM)/TAM_PAGE);
-	printf("\tTamnho da pagina de disco: %02d Bytes\n\n", TAM_PAGE);
+	printf("\tTamanho da pagina de disco: %02d Bytes\n\n", TAM_PAGE);
 
 	// While de comandos
 	while (comandos != 'q') {
@@ -64,6 +73,9 @@ int main(int argc, char const* argv[])
 			cout << "\tH: [Ajuda]                                - H" << endl;
 			cout << "\tQ: [Encerrar programa]                    - Q" << endl;
 			cout << endl;
+			break;
+		case 'q':
+			break;
 		default:
 			cout << "# Comando invalido" << endl << endl;
 			break;

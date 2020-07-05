@@ -22,6 +22,8 @@ Mateus Fernandes Doimo - Nº USP: 10691971</br>
 #### Executar programa:
 `$ ./memoria`
 
+OBS: Para pegar os comandos do arquivo de entrada, descomente o if do main.cpp nas linhas 13 e 17
+
 <hr>
 <h3>:pencil: Descrição do trabalho:</h3>
 <p>Desenvolver um simulador  de gerenciamento de memória virtual com paginação</p>

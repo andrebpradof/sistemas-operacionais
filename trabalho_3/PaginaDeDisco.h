@@ -3,7 +3,7 @@
 class PaginaDeDisco
 {
 public:
-	int endereco;
+	int id;
 	int ocupacao;
 	int pid;
 	int r;
