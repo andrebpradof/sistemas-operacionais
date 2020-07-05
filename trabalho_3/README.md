@@ -10,7 +10,7 @@ Mateus Fernandes Doimo - Nº USP: 10691971</br>
 
 </br>
 
-<b>:video_camera: Vídeo:</b> <a href="#">LINK AQUI</a><br><br>
+<b>:video_camera: Vídeo:</b> <a href="https://www.youtube.com/watch?v=VCLL2Ivikis">https://www.youtube.com/watch?v=VCLL2Ivikis</a><br><br>
 <b>:page_facing_up: Apresentação:</b> <a href="https://github.com/andrebpradof/sistemas-operacionais/tree/master/trabalho_3/apresentacao">Trabalho 3 - Gerenciamento de Memória - grupo 08</a><br>
 <br>
 <hr>
